@@ -1,0 +1,184 @@
+{
+  "shipments": [
+    {
+      "trackingNumber": "BKMEOWQS89",
+      "senderName": "Eric Vicky",
+      "senderContact": "47647587587",
+      "consigneeName": "Selasie Vinx",
+      "consigneeContact": "5885785879",
+      "origin": "Ghana",
+      "destination": "Port of Philadelphia",
+      "cargo": "Container",
+      "packageDescription": "GMC, Silverado",
+      "weight": "127kg &123kg",
+      "dimensions": "76x56x21",
+      "quantity": "3",
+      "status": "Booked",
+      "latitude": null,
+      "longitude": null,
+      "estimatedDeparture": "2025 Sept. 4",
+      "estimatedDelivery": "2025 Sept. 20",
+      "history": [
+        {
+          "status": "Booked",
+          "latitude": null,
+          "longitude": null,
+          "date": "2025-08-23T23:45:48.394Z"
+        },
+        {
+          "status": "Booked",
+          "location": "Ghana",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "To be shipped",
+          "date": "2025-08-23T23:46:51.329Z"
+        }
+      ],
+      "createdAt": "2025-08-23T23:45:48.394Z",
+      "updatedAt": "2025-08-23T23:46:51.329Z",
+      "location": "Ghana",
+      "remarks": "To be shipped"
+    },
+    {
+      "trackingNumber": "BKMEOVPQ1B",
+      "senderName": "Eric Vicky",
+      "senderContact": "47647587587",
+      "consigneeName": "Selasie Vinx",
+      "consigneeContact": "5885785879",
+      "origin": "Shuwaikh Port",
+      "destination": "Port of Philadelphia",
+      "cargo": "Trucks",
+      "packageDescription": "GMC & Silverado",
+      "weight": "127kg &123kg",
+      "dimensions": "76X56X21 &43X12X10",
+      "quantity": "2",
+      "status": "Booked",
+      "latitude": null,
+      "longitude": null,
+      "estimatedDeparture": "2025 Sept. 4",
+      "estimatedDelivery": "2025 Sept. 20",
+      "history": [
+        {
+          "status": "Booked",
+          "latitude": null,
+          "longitude": null,
+          "date": "2025-08-23T23:16:59.279Z"
+        },
+        {
+          "status": "Booked",
+          "location": "Shuwaikh Port, Kuwait",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "To be shipped",
+          "date": "2025-08-23T23:17:38.282Z"
+        }
+      ],
+      "createdAt": "2025-08-23T23:16:59.279Z",
+      "updatedAt": "2025-08-23T23:17:38.282Z",
+      "location": "Shuwaikh Port, Kuwait",
+      "remarks": "To be shipped"
+    },
+    {
+      "trackingNumber": "BKMEN8N4AM",
+      "senderName": "Eric Vicky",
+      "senderContact": "47647587587",
+      "consigneeName": "Selasie Vinx",
+      "consigneeContact": "5885785879",
+      "origin": "Shuwaikh Port",
+      "destination": "Port of Philadelphia",
+      "cargo": "Trucks",
+      "packageDescription": "GMC and Silverado",
+      "weight": "128",
+      "dimensions": "76X56X21",
+      "quantity": "3",
+      "status": "On Vessel",
+      "latitude": null,
+      "longitude": null,
+      "estimatedDeparture": "2025 Sept. 4",
+      "estimatedDelivery": "2025 Sept. 20",
+      "history": [
+        {
+          "status": "Booked",
+          "latitude": null,
+          "longitude": null,
+          "date": "2025-08-22T19:43:20.447Z"
+        },
+        {
+          "status": "On Vessel",
+          "location": "Ghana",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "In Transit",
+          "date": "2025-08-22T20:12:34.209Z"
+        }
+      ],
+      "createdAt": "2025-08-22T19:43:20.447Z",
+      "updatedAt": "2025-08-22T20:12:34.209Z",
+      "location": "Ghana",
+      "remarks": "In Transit"
+    },
+    {
+      "trackingNumber": "BKMEMSOWLD",
+      "senderName": "Eric Vicky",
+      "senderContact": "47647587587",
+      "consigneeName": "Selasie Vinx",
+      "consigneeContact": "5885785879",
+      "origin": "Shuwaikh Port",
+      "destination": "Port of Philadelphia",
+      "cargo": "Trucks",
+      "packageDescription": "GMC, Silverado",
+      "weight": "567",
+      "dimensions": "76x56x21",
+      "quantity": "3",
+      "status": "In Port",
+      "latitude": null,
+      "longitude": null,
+      "estimatedDeparture": "2025 Sept. 4",
+      "estimatedDelivery": "2025 Sept. 20",
+      "history": [
+        {
+          "status": "Booked",
+          "latitude": null,
+          "longitude": null,
+          "date": "2025-08-22T12:16:49.921Z"
+        },
+        {
+          "status": "Booked",
+          "location": "Shuwaikh Port, Kuwait",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "Package is ready to be shipped",
+          "date": "2025-08-22T12:17:59.048Z"
+        },
+        {
+          "status": "In Port",
+          "location": "Shuwaikh Port, Kuwait",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "Package is ready to be shipped",
+          "date": "2025-08-22T12:21:43.786Z"
+        },
+        {
+          "status": "In Port",
+          "location": "Shuwaikh Port, Kuwait",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "Package is ready to be shipped",
+          "date": "2025-08-23T01:32:45.329Z"
+        },
+        {
+          "status": "In Port",
+          "location": "Shuwaikh Port, Kuwait",
+          "latitude": null,
+          "longitude": null,
+          "remarks": "Package on the way",
+          "date": "2025-08-23T23:14:47.816Z"
+        }
+      ],
+      "createdAt": "2025-08-22T12:16:49.921Z",
+      "updatedAt": "2025-08-23T23:14:47.816Z",
+      "location": "Shuwaikh Port, Kuwait",
+      "remarks": "Package on the way"
+    }
+  ]
+}

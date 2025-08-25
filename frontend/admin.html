@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipment Admin Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      color: #003366;
+    }
+
+    /* Form */
+    form input, form select, form button {
+      padding: 10px;
+      margin: 8px 6px 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    form button {
+      background: #003366;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    form button:hover {
+      background: #0055aa;
+    }
+
+    /* Group headings */
+    .status-group {
+      margin-bottom: 30px;
+    }
+    .status-group h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #0055aa;
+      border-left: 4px solid #0055aa;
+      padding-left: 8px;
+    }
+
+    /* Shipment Cards Layout */
+    .shipments-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .shipment-card {
+      background: #fff;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shipment-card h4 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: #003366;
+    }
+
+    .shipment-detail {
+      font-size: 0.9rem;
+      margin: 4px 0;
+    }
+
+    .shipment-detail strong {
+      color: #003366;
+    }
+
+    .status-select, .location, .remarks, .etd, .eta, .description {
+      padding: 6px;
+      margin-top: 6px;
+      width: 100%;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    /* Buttons */
+    .action-buttons {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .action-btn {
+      min-width: 80px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+    .update-btn {
+      background: #28a745;
+      color: #fff;
+    }
+    .update-btn:hover {
+      background: #218838;
+    }
+    .delete-btn {
+      background: #dc3545;
+      color: #fff;
+    }
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    /* Search & Filter */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-bar input, .filter-bar select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shipment Admin Dashboard</h1>
+
+  <!-- Booking Form -->
+  <div class="card">
+    <h2>Add Booking</h2>
+    <form id="bookingForm">
+      <input type="text" name="senderName" placeholder="Sender Name" required>
+      <input type="text" name="senderContact" placeholder="Sender Contact">
+      <input type="text" name="consigneeName" placeholder="Consignee Name" required>
+      <input type="text" name="consigneeContact" placeholder="Consignee Contact">
+      <input type="text" name="origin" placeholder="Origin" required>
+      <input type="text" name="destination" placeholder="Destination" required>
+      <input type="text" name="cargo" placeholder="Cargo Description" required>
+      <input type="text" name="packageDescription" placeholder="Package Details">
+      <input type="text" name="weight" placeholder="Weight (kg)" required>
+      <input type="text" name="dimensions" placeholder="Dimensions (LxWxH cm)" required>
+      <input type="number" name="quantity" placeholder="Quantity" required>
+      <input type="text" name="estimatedDeparture" placeholder="Estimated Departure (e.g. 2025-08-21)">
+      <input type="text" name="estimatedDelivery" placeholder="Estimated Delivery (e.g. 2025-08-28)">
+      <button type="submit">Add Booking</button>
+    </form>
+  </div>
+
+  <!-- Shipments -->
+  <div class="card">
+    <h2>All Shipments</h2>
+
+    <div class="filter-bar">
+      <input type="text" id="searchBox" placeholder="Search by Tracking #, Sender, Consignee, Cargo">
+      <select id="statusFilter">
+        <option value="">All Statuses</option>
+        <option>Booked</option>
+        <option>In Port</</option>
+        <option>On Vessel</option>
+        <option>Delivered</option>
+      </select>
+    </div>
+
+    <div id="shipmentsWrapper"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000';
+    let allShipments = [];
+
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        senderName: form.senderName.value,
+        senderContact: form.senderContact.value,
+        consigneeName: form.consigneeName.value,
+        consigneeContact: form.consigneeContact.value,
+        origin: form.origin.value,
+        destination: form.destination.value,
+        cargo: form.cargo.value,
+        packageDescription: form.packageDescription.value,
+        weight: form.weight.value,
+        dimensions: form.dimensions.value,
+        quantity: form.quantity.value,
+        estimatedDeparture: form.estimatedDeparture.value,
+        estimatedDelivery: form.estimatedDelivery.value
+      };
+      const res = await fetch(API_BASE + '/admin/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if(result.ok) {
+        alert('Booking added: ' + result.shipment.trackingNumber);
+        loadShipments();
+        form.reset();
+      } else {
+        alert('Error: ' + result.error);
+      }
+    });
+
+    function createCard(s) {
+      const sender = s.senderContact ? `${s.senderName} (${s.senderContact})` : s.senderName;
+      const consignee = s.consigneeContact ? `${s.consigneeName} (${s.consigneeContact})` : s.consigneeName;
+
+      const card = document.createElement('div');
+      card.className = 'shipment-card';
+      card.innerHTML = `
+        <h4>Tracking #: ${s.trackingNumber}</h4>
+        <div class="shipment-detail"><strong>Sender:</strong> ${sender || ''}</div>
+        <div class="shipment-detail"><strong>Consignee:</strong> ${consignee || ''}</div>
+        <div class="shipment-detail"><strong>Origin:</strong> ${s.origin || ''} → <strong>Destination:</strong> ${s.destination || ''}</div>
+        <div class="shipment-detail"><strong>Cargo:</strong> ${s.cargo || ''}</div>
+        <div class="shipment-detail"><strong>Description:</strong> ${s.packageDescription || ''}</div>
+        <div class="shipment-detail"><strong>Weight:</strong> ${s.weight || ''} kg</div>
+        <div class="shipment-detail"><strong>Dimensions:</strong> ${s.dimensions || ''}</div>
+        <div class="shipment-detail"><strong>Quantity:</strong> ${s.quantity || ''}</div>
+        <div class="shipment-detail"><strong>ETD:</strong> <input type="text" value="${s.estimatedDeparture||''}" class="etd"></div>
+        <div class="shipment-detail"><strong>ETA:</strong> <input type="text" value="${s.estimatedDelivery||''}" class="eta"></div>
+        <div class="shipment-detail">
+          <strong>Status:</strong>
+          <select class="status-select">
+            <option ${s.status==='Booked'?'selected':''}>Booked</option>
+            <option ${s.status==='In Port'?'selected':''}>In Port</option>
+            <option ${s.status==='On Vessel'?'selected':''}>On Vessel</option>
+            <option ${s.status==='Delivered'?'selected':''}>Delivered</option>
+          </select>
+        </div>
+        <div class="shipment-detail"><strong>Location:</strong> <input type="text" value="${s.location||''}" class="location"></div>
+        <div class="shipment-detail"><strong>Remarks:</strong> <input type="text" value="${s.remarks||''}" class="remarks"></div>
+        <div class="action-buttons">
+          <button class="action-btn update-btn">Update</button>
+          <button class="action-btn delete-btn">Delete</button>
+        </div>
+      `;
+
+      // Update handler
+      card.querySelector('.update-btn').addEventListener('click', async () => {
+        const status = card.querySelector('.status-select').value;
+        const location = card.querySelector('.location').value;
+        const remarks = card.querySelector('.remarks').value;
+        const estimatedDeparture = card.querySelector('.etd').value;
+        const estimatedDelivery = card.querySelector('.eta').value;
+        const res = await fetch(API_BASE + '/admin/update/' + s.trackingNumber, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, location, remarks, estimatedDeparture, estimatedDelivery })
+        });
+        const result = await res.json();
+        if(result.ok) {
+          alert('Updated ' + s.trackingNumber);
+          loadShipments();
+        } else {
+          alert('Error: ' + result.error);
+        }
+      });
+
+      // Delete handler
+      card.querySelector('.delete-btn').addEventListener('click', async () => {
+        if(confirm('Delete shipment ' + s.trackingNumber + '?')) {
+          const res = await fetch(API_BASE + '/admin/delete/' + s.trackingNumber, {
+            method: 'DELETE'
+          });
+          const result = await res.json();
+          if(result.ok) {
+            alert('Deleted ' + s.trackingNumber);
+            loadShipments();
+          } else {
+            alert('Error: ' + result.error);
+          }
+        }
+      });
+
+      return card;
+    }
+
+    function renderShipments(shipments) {
+      const wrapper = document.getElementById('shipmentsWrapper');
+      wrapper.innerHTML = '';
+
+      const statuses = ["Booked", "In Port", "On Vessel", "Delivered"];
+      statuses.forEach(status => {
+        const group = shipments.filter(s => s.status === status);
+        if(group.length > 0) {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'status-group';
+          groupDiv.innerHTML = `<h3>${status}</h3>`;
+
+          const container = document.createElement('div');
+          container.className = 'shipments-container';
+
+          group.forEach(s => container.appendChild(createCard(s)));
+
+          groupDiv.appendChild(container);
+          wrapper.appendChild(groupDiv);
+        }
+      });
+    }
+
+    async function loadShipments() {
+      const res = await fetch(API_BASE + '/admin/list');
+      allShipments = await res.json();
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      let filtered = allShipments.filter(s => {
+        const matchesSearch =
+          s.trackingNumber.toLowerCase().includes(searchTerm) ||
+          (s.senderName || '').toLowerCase().includes(searchTerm) ||
+          (s.consigneeName || '').toLowerCase().includes(searchTerm) ||
+          (s.cargo || '').toLowerCase().includes(searchTerm);
+
+        const matchesStatus = statusFilter ? s.status === statusFilter : true;
+        return matchesSearch && matchesStatus;
+      });
+
+      renderShipments(filtered);
+    }
+
+    document.getElementById('searchBox').addEventListener('input', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+    loadShipments();
+  </script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track & Trace - Wallenius Wilhelmsen</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-left-color: #000;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="text-4xl font-bold">W°</div>
+        <div class="text-sm leading-tight font-medium">
+          <div>Wallenius</div><div>Wilhelmsen</div>
+        </div>
+      </div>
+      <nav class="hidden md:flex space-x-8">
+        <a href="#" class="text-xl font-medium hover:text-gray-500">Schedules</a>
+        <a href="#" class="text-xl font-semibold">Track & Trace</a>
+        <a href="#" class="text-xl font-medium hover:text-gray-500">Investor</a>
+        <a href="#" class="text-xl font-medium hover:text-gray-500">Careers</a>
+        <a href="#" class="text-xl font-medium hover:text-gray-500">Search</a>
+      </nav>
+      <button class="md:hidden border px-3 py-2 rounded text-lg">Menu</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="pt-24 min-h-screen">
+    <div class="container mx-auto px-6 py-12">
+      <h1 class="text-4xl font-bold text-center mb-10">Track & Trace</h1>
+
+      <div class="bg-gray-900 text-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-semibold mb-6">Visibility - Search</h2>
+
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+          <input id="trackingInput" type="text" placeholder="Enter tracking number"
+            class="flex-1 h-12 px-4 rounded border bg-white text-black"/>
+          <button id="searchBtn"
+            class="h-12 px-6 bg-black text-white rounded hover:bg-gray-800">🔍 Search</button>
+        </div>
+
+        <div id="loading" class="hidden text-center mb-6">
+          <div class="spinner"></div><p class="mt-2">Loading...</p>
+        </div>
+
+        <div id="results" class="hidden space-y-8">
+          <!-- Summary -->
+          <div id="summaryCard" class="bg-gray-800 p-6 rounded-lg"></div>
+
+          <!-- Details Table -->
+          <div>
+            <h3 class="text-xl font-semibold mb-3">Shipment Details</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border border-gray-700">
+                <thead class="bg-gray-700">
+                  <tr>
+                    <th class="p-2">Description</th>
+                    <th class="p-2">Weight</th>
+                    <th class="p-2">Dimensions</th>
+                    <th class="p-2">Quantity</th>
+                    <th class="p-2">Est. Departure</th>
+                    <th class="p-2">Est. Delivery</th>
+                  </tr>
+                </thead>
+                <tbody id="detailsTable" class="divide-y divide-gray-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- History Timeline -->
+          <div>
+            <h3 class="text-xl font-semibold mb-3">History</h3>
+            <ul id="historyList" class="space-y-4"></ul>
+          </div>
+
+          <!-- Map -->
+          <div id="map" class="h-96 hidden rounded-lg overflow-hidden"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-200 py-12 mt-12">
+    <div class="container mx-auto grid md:grid-cols-4 gap-8 px-6">
+      <div>
+        <h4 class="font-bold mb-3">Resources</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:underline">Schedules</a></li>
+          <li><a href="#" class="hover:underline">Track & Trace</a></li>
+          <li><a href="#" class="hover:underline">Rate Request</a></li>
+          <li><a href="#" class="hover:underline">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Company</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:underline">About</a></li>
+          <li><a href="#" class="hover:underline">Careers</a></li>
+          <li><a href="#" class="hover:underline">Investor</a></li>
+          <li><a href="#" class="hover:underline">News & Insights</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Follow Us</h4>
+        <div class="flex space-x-4">
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/twitter.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="w-6 h-6"/></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Legal</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:underline">Privacy Notice</a></li>
+          <li><a href="#" class="hover:underline">Cookie Policy</a></li>
+          <li><a href="#" class="hover:underline">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center mt-8 text-sm text-gray-400">© 2025 Wallenius Wilhelmsen. All rights reserved.</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const searchBtn = document.getElementById("searchBtn");
+    const input = document.getElementById("trackingInput");
+    const loading = document.getElementById("loading");
+    const results = document.getElementById("results");
+    const summaryCard = document.getElementById("summaryCard");
+    const detailsTable = document.getElementById("detailsTable");
+    const historyList = document.getElementById("historyList");
+    const mapDiv = document.getElementById("map");
+
+    let map, marker;
+    const socket = io("http://localhost:3000");
+
+    async function getCoords(place) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+      } catch (err) {
+        console.error("Geocoding failed:", err);
+      }
+      return null;
+    }
+
+    searchBtn.addEventListener("click", async () => {
+      const query = input.value.trim();
+      if (!query) return alert("Please enter a tracking number");
+
+      loading.classList.remove("hidden");
+      results.classList.add("hidden");
+      mapDiv.classList.add("hidden");
+
+      try {
+        const res = await fetch(`http://localhost:3000/track?number=${query}`);
+        const data = await res.json();
+
+        loading.classList.add("hidden");
+        results.classList.remove("hidden");
+
+        // Summary
+        summaryCard.innerHTML = `
+          <div class="space-y-2">
+            <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Cargo:</strong> ${data.cargo} (${data.quantity})</p>
+            <p><strong>From:</strong> ${data.origin} → <strong>To:</strong> ${data.destination}</p>
+            <p><strong>Remarks:</strong> ${data.remarks || "—"}</p>
+          </div>`;
+
+        // Details Table
+        detailsTable.innerHTML = `
+          <tr>
+            <td class="p-2">${data.packageDescription || "—"}</td>
+            <td class="p-2">${data.weight || "—"}</td>
+            <td class="p-2">${data.dimensions || "—"}</td>
+            <td class="p-2">${data.quantity || "—"}</td>
+            <td class="p-2">${data.estimatedDeparture || "—"}</td>
+            <td class="p-2">${data.estimatedDelivery || "—"}</td>
+          </tr>`;
+
+        // History
+        historyList.innerHTML = data.history.map(h => `
+          <li class="border-l-2 border-gray-600 pl-4">
+            <p><strong>${new Date(h.date).toLocaleString()}</strong> — ${h.status}</p>
+            <p class="text-sm text-gray-400">${h.location || ""} ${h.remarks || ""}</p>
+          </li>`).join("");
+
+        // Map: coords = lat/lng or geocode origin
+        let coords = null;
+        if (data.latitude && data.longitude) {
+          coords = [data.latitude, data.longitude];
+        } else if (data.origin) {
+          coords = await getCoords(data.origin);
+        }
+
+        if (coords) {
+          mapDiv.classList.remove("hidden");
+          if (!map) {
+            map = L.map("map").setView(coords, 5);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              maxZoom: 19,
+            }).addTo(map);
+          }
+          if (marker) marker.remove();
+          marker = L.marker(coords).addTo(map);
+          map.setView(coords, 5);
+
+          // Live updates
+          socket.on("locationUpdate", update => {
+            if (update.number === query) {
+              marker.setLatLng([update.lat, update.lng]);
+              map.setView([update.lat, update.lng], 5);
+            }
+          });
+        }
+      } catch (err) {
+        loading.classList.add("hidden");
+        alert("Error fetching tracking data");
+      }
+    });
+  </script>
+</body>
+</html>
