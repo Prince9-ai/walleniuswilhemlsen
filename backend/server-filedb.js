@@ -24,6 +24,12 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+// ================== Serve Frontend ==================
+app.use(express.static(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com/index.html"));
+});
+
 // ================== File Database ==================
 const DB_FILE = path.join(__dirname, "shipments.json");
 let shipments = [];
@@ -109,7 +115,6 @@ app.post("/admin/book", (req, res) => {
 
 // NEW: List shipments for admin (matches server.js shape)
 app.get("/admin/list", (req, res) => {
-  // already unshifted to keep newest first; cap to 500 if you want
   res.json(shipments.slice(0, 500));
 });
 
@@ -146,7 +151,6 @@ app.put("/admin/update/:trackingNumber", (req, res) => {
 
   saveShipments();
 
-  // optional: emit via socket if you use it on the frontend
   io.to(tn).emit("shipment:update", {
     tracking_number: s.trackingNumber,
     status: s.status,
@@ -171,6 +175,7 @@ app.delete("/admin/delete/:trackingNumber", (req, res) => {
   res.json({ ok: true, message: removed ? `Deleted ${tn}` : "Nothing to delete" });
 });
 
+// ================== Tracking API ==================
 app.get("/track", (req, res) => {
   const number = req.query.number || req.query.trackingNumber;
   if (!number) return res.json({ ok: false, error: "Tracking number required" });
@@ -198,14 +203,6 @@ app.get("/track", (req, res) => {
     history: s.history || []
   });
 });
-
-
-// ================== Serve Frontend ==================
-app.use(express.static(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com/index.html"));
-});
-
 
 // ================== Socket.io ==================
 io.on("connection", (socket) => {
