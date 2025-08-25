@@ -1,9 +1,8 @@
 {
-  "name": "shiptracker",
+  "name": "walleniuswilhelmsen",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
-    "start": "node server-filedb.cjs",
+    "start": "node server-filedb.js",
     "dev": "nodemon server.js",
     "start:filedb": "node server-filedb.js",
     "dev:filedb": "nodemon server-filedb.js"
