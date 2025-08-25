@@ -23,31 +23,68 @@
       margin: 0 auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ✅ FIX: allow content (including map) to scroll under navbar */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    main {
+      padding-top: 88px; /* match navbar height so content starts below */
+    }
+    #map {
+      z-index: 0;
+      position: relative;
+    }
   </style>
 </head>
 <body class="bg-white text-black">
-  <!-- Header -->
-  <header class="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200">
+  <!-- ✅ Header -->
+  <header class="bg-white border-b border-gray-200">
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <div class="text-4xl font-bold">W°</div>
-        <div class="text-sm leading-tight font-medium">
-          <div>Wallenius</div><div>Wilhelmsen</div>
-        </div>
-      </div>
+      
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center space-x-3">
+        <img src="logo.jpg" alt="Wallenius Wilhelmsen Logo" class="h-10 w-auto md:h-12">
+      </a>
+
+      <!-- Navbar -->
       <nav class="hidden md:flex space-x-8">
-        <a href="#" class="text-xl font-medium hover:text-gray-500">Schedules</a>
-        <a href="#" class="text-xl font-semibold">Track & Trace</a>
-        <a href="#" class="text-xl font-medium hover:text-gray-500">Investor</a>
-        <a href="#" class="text-xl font-medium hover:text-gray-500">Careers</a>
-        <a href="#" class="text-xl font-medium hover:text-gray-500">Search</a>
+        <a href="schedules.html" class="text-xl font-medium hover:text-gray-500">Schedules</a>
+        <a href="track-trace.html" class="text-xl font-semibold">Track & Trace</a>
+        <a href="who-we-are/investors.html" class="text-xl font-medium hover:text-gray-500">Investor</a>
+        <a href="ukraine-situation.html" class="text-xl font-medium hover:text-gray-500">Careers</a>
+        <a href="search.html" class="text-xl font-medium hover:text-gray-500">Search</a>
       </nav>
-      <button class="md:hidden border px-3 py-2 rounded text-lg">Menu</button>
-    </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="menuBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5 focus:outline-none">
+        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+      </button>
+
+      <!-- Mobile Menu -->
+        <div id="mobileMenu">
+        class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
+        <a href="schedules.html" class="text-xl font-medium hover:text-gray-500">Schedules</a>
+        <a href="track-trace.html" class="text-xl font-semibold">Track & Trace</a>
+        <a href="who-we-are/investors.html" class="text-xl font-medium hover:text-gray-500">Investor</a>
+        <a href="ukraine-situation.html" class="text-xl font-medium hover:text-gray-500">Careers</a>
+        <a href="search.html" class="text-xl font-medium hover:text-gray-500">Search</a>
+        </div>
+ 
   </header>
 
+  <!-- Mobile Menu Overlay -->
+<div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden md:hidden z-40"></div>
+
+
   <!-- Main -->
-  <main class="pt-24 min-h-screen">
+  <main class="min-h-screen">
     <div class="container mx-auto px-6 py-12">
       <h1 class="text-4xl font-bold text-center mb-10">Track & Trace</h1>
 
@@ -56,10 +93,11 @@
 
         <div class="flex flex-col sm:flex-row gap-4 mb-6">
           <input id="trackingInput" type="text" placeholder="Enter tracking number"
-            class="flex-1 h-12 px-4 rounded border bg-white text-black"/>
+            class="flex-1 min-w-[200px] w-full h-12 px-4 rounded border bg-white text-black"/>
           <button id="searchBtn"
-            class="h-12 px-6 bg-black text-white rounded hover:bg-gray-800">🔍 Search</button>
+            class="w-full sm:w-auto h-12 px-6 bg-black text-white rounded hover:bg-gray-800">🔍 Search</button>
         </div>
+        
 
         <div id="loading" class="hidden text-center mb-6">
           <div class="spinner"></div><p class="mt-2">Loading...</p>
@@ -108,10 +146,10 @@
       <div>
         <h4 class="font-bold mb-3">Resources</h4>
         <ul class="space-y-2">
-          <li><a href="#" class="hover:underline">Schedules</a></li>
-          <li><a href="#" class="hover:underline">Track & Trace</a></li>
-          <li><a href="#" class="hover:underline">Rate Request</a></li>
-          <li><a href="#" class="hover:underline">Contact Us</a></li>
+          <li><a href="schedules.html" class="hover:underline">Schedules</a></li>
+          <li><a href="track-trace.html" class="hover:underline">Track & Trace</a></li>
+          <li><a href="rate-request.html" class="hover:underline">Rate Request</a></li>
+          <li><a href="contact-us.html" class="hover:underline">Contact Us</a></li>
         </ul>
       </div>
       <div>
@@ -216,7 +254,7 @@
             <p class="text-sm text-gray-400">${h.location || ""} ${h.remarks || ""}</p>
           </li>`).join("");
 
-        // Map: coords = lat/lng or geocode origin
+        // Map
         let coords = null;
         if (data.latitude && data.longitude) {
           coords = [data.latitude, data.longitude];
@@ -236,7 +274,6 @@
           marker = L.marker(coords).addTo(map);
           map.setView(coords, 5);
 
-          // Live updates
           socket.on("locationUpdate", update => {
             if (update.number === query) {
               marker.setLatLng([update.lat, update.lng]);
@@ -249,6 +286,54 @@
         alert("Error fetching tracking data");
       }
     });
+
+// Mobile menu js
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+const menuOverlay = document.getElementById("menuOverlay");
+
+let menuOpen = false;
+
+menuBtn.addEventListener("click", () => {
+  menuOpen = !menuOpen;
+
+  // Toggle dropdown
+  if (menuOpen) {
+    mobileMenu.classList.remove("max-h-0");
+    mobileMenu.classList.add("max-h-96");
+    menuOverlay.classList.remove("hidden");
+  } else {
+    mobileMenu.classList.remove("max-h-96");
+    mobileMenu.classList.add("max-h-0");
+    menuOverlay.classList.add("hidden");
+  }
+
+  // Animate hamburger → X
+  const bars = menuBtn.querySelectorAll("span");
+  if (menuOpen) {
+    bars[0].classList.add("rotate-45", "translate-y-2");
+    bars[1].classList.add("opacity-0");
+    bars[2].classList.add("-rotate-45", "-translate-y-2");
+  } else {
+    bars[0].classList.remove("rotate-45", "translate-y-2");
+    bars[1].classList.remove("opacity-0");
+    bars[2].classList.remove("-rotate-45", "-translate-y-2");
+  }
+});
+
+// ✅ Close menu if overlay is clicked
+menuOverlay.addEventListener("click", () => {
+  menuOpen = false;
+  mobileMenu.classList.remove("max-h-96");
+  mobileMenu.classList.add("max-h-0");
+  menuOverlay.classList.add("hidden");
+
+  const bars = menuBtn.querySelectorAll("span");
+  bars[0].classList.remove("rotate-45", "translate-y-2");
+  bars[1].classList.remove("opacity-0");
+  bars[2].classList.remove("-rotate-45", "-translate-y-2");
+});
+
   </script>
 </body>
 </html>
