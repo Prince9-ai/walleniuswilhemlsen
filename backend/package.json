@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server-filedb.js",
+    "start": "node server-filedb.cjs",
     "dev": "nodemon server.js",
     "start:filedb": "node server-filedb.js",
     "dev:filedb": "nodemon server-filedb.js"
