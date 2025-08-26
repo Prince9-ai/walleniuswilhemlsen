@@ -48,39 +48,49 @@
       
       <!-- Logo -->
       <a href="index.html" class="flex items-center space-x-3">
-        <img src="logo.jpg" alt="Wallenius Wilhelmsen Logo" class="h-10 w-auto md:h-12">
+        <img src="/logo.jpg" alt="Wallenius Wilhelmsen Logo" class="h-10 w-auto md:h-12">
       </a>
 
       <!-- Navbar -->
-      <nav class="hidden md:flex space-x-8">
-        <a href="schedules.html" class="text-xl font-medium hover:text-gray-500">Schedules</a>
-        <a href="track-trace.html" class="text-xl font-semibold">Track & Trace</a>
-        <a href="who-we-are/investors.html" class="text-xl font-medium hover:text-gray-500">Investor</a>
-        <a href="ukraine-situation.html" class="text-xl font-medium hover:text-gray-500">Careers</a>
-        <a href="search.html" class="text-xl font-medium hover:text-gray-500">Search</a>
-      </nav>
+<nav class="flex items-center justify-between px-4 py-3 bg-white shadow relative">
+  <!-- Left: Logo -->
+  <a href="index.html" class="flex items-center space-x-3">
+    <img src="/logo.jpg" alt="Wallenius Wilhelmsen Logo" class="h-10 w-auto md:h-12">
+  </a>
 
-      <!-- Mobile Menu Button -->
-      <button id="menuBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5 focus:outline-none">
-        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
-        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
-        <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
-      </button>
+  <!-- Right: Desktop Links + Mobile Menu Button -->
+  <div class="flex items-center space-x-6">
+    <!-- Desktop Links -->
+    <div class="hidden md:flex space-x-6">
+      <a href="schedules.html" class="text-gray-700">Schedules</a>
+      <a href="track-trace.html" class="text-gray-700">Track & Trace</a>
+      <a href="who-we-are/investors.html" class="text-gray-700">Investor</a>
+      <a href="ukraine-situation.html" class="text-gray-700">Careers</a>
+      <a href="search.html" class="text-gray-700">Search</a>
+    </div>
 
-      <!-- Mobile Menu -->
-        <div id="mobileMenu">
-        <div id="mobileMenu" class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
-        <a href="schedules.html" class="text-xl font-medium hover:text-gray-500">Schedules</a>
-        <a href="track-trace.html" class="text-xl font-semibold">Track & Trace</a>
-        <a href="who-we-are/investors.html" class="text-xl font-medium hover:text-gray-500">Investor</a>
-        <a href="ukraine-situation.html" class="text-xl font-medium hover:text-gray-500">Careers</a>
-        <a href="search.html" class="text-xl font-medium hover:text-gray-500">Search</a>
-        </div>
+    <!-- Mobile Menu Button -->
+    <button id="menuBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5 focus:outline-none">
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+  <!-- Mobile Dropdown -->
+  <div id="mobileMenu" class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
+    <a href="schedules.html" class="block px-4 py-2 text-xl font-medium hover:text-gray-500">Schedules</a>
+    <a href="track-trace.html" class="block px-4 py-2 text-xl font-semibold">Track & Trace</a>
+    <a href="who-we-are/investors.html" class="block px-4 py-2 text-xl font-medium hover:text-gray-500">Investor</a>
+    <a href="ukraine-situation.html" class="block px-4 py-2 text-xl font-medium hover:text-gray-500">Careers</a>
+    <a href="search.html" class="block px-4 py-2 text-xl font-medium hover:text-gray-500">Search</a>
+  </div>
+</nav>
  
   </header>
-
-  <!-- Mobile Menu Overlay -->
-<div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden md:hidden z-40"></div>
 
 
   <!-- Main -->
@@ -189,157 +199,155 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const searchBtn = document.getElementById("searchBtn");
-    const input = document.getElementById("trackingInput");
-    const loading = document.getElementById("loading");
-    const results = document.getElementById("results");
-    const summaryCard = document.getElementById("summaryCard");
-    const detailsTable = document.getElementById("detailsTable");
-    const historyList = document.getElementById("historyList");
-    const mapDiv = document.getElementById("map");
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const searchBtn = document.getElementById("trackButton"); // ✅ fixed
+  const input = document.getElementById("trackingInput");
+  const loading = document.getElementById("loading");
+  const results = document.getElementById("results");
+  const summaryCard = document.getElementById("summaryCard");
+  const detailsTable = document.getElementById("detailsTable");
+  const historyList = document.getElementById("historyList");
+  const mapDiv = document.getElementById("map");
 
-    let map, marker;
-    const socket = io("http://localhost:3000");
+  let map, marker;
+  const socket = io(); // ✅ relative, not localhost
 
-    async function getCoords(place) {
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`);
-        const data = await res.json();
-        if (data && data.length > 0) {
-          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-        }
-      } catch (err) {
-        console.error("Geocoding failed:", err);
+  async function getCoords(place) {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
       }
-      return null;
+    } catch (err) {
+      console.error("Geocoding failed:", err);
+    }
+    return null;
+  }
+
+  searchBtn.addEventListener("click", async () => {
+    const query = input.value.trim();
+    if (!query) return alert("Please enter a tracking number");
+
+    loading.classList.remove("hidden");
+    results.classList.add("hidden");
+    mapDiv.classList.add("hidden");
+
+    try {
+      const res = await fetch(`/track?number=${query}`); // ✅ relative path
+      const data = await res.json();
+
+      loading.classList.add("hidden");
+      results.classList.remove("hidden");
+
+      // Summary
+      summaryCard.innerHTML = `
+        <div class="space-y-2">
+          <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p><strong>Cargo:</strong> ${data.cargo} (${data.quantity})</p>
+          <p><strong>From:</strong> ${data.origin} → <strong>To:</strong> ${data.destination}</p>
+          <p><strong>Remarks:</strong> ${data.remarks || "—"}</p>
+        </div>`;
+
+      // Details Table
+      detailsTable.innerHTML = `
+        <tr>
+          <td class="p-2">${data.packageDescription || "—"}</td>
+          <td class="p-2">${data.weight || "—"}</td>
+          <td class="p-2">${data.dimensions || "—"}</td>
+          <td class="p-2">${data.quantity || "—"}</td>
+          <td class="p-2">${data.estimatedDeparture || "—"}</td>
+          <td class="p-2">${data.estimatedDelivery || "—"}</td>
+        </tr>`;
+
+      // History
+      historyList.innerHTML = data.history.map(h => `
+        <li class="border-l-2 border-gray-600 pl-4">
+          <p><strong>${new Date(h.date).toLocaleString()}</strong> — ${h.status}</p>
+          <p class="text-sm text-gray-400">${h.location || ""} ${h.remarks || ""}</p>
+        </li>`).join("");
+
+      // Map
+      let coords = null;
+      if (data.latitude && data.longitude) {
+        coords = [data.latitude, data.longitude];
+      } else if (data.origin) {
+        coords = await getCoords(data.origin);
+      }
+
+      if (coords) {
+        mapDiv.classList.remove("hidden");
+        if (!map) {
+          map = L.map("map").setView(coords, 5);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+          }).addTo(map);
+        }
+        if (marker) marker.remove();
+        marker = L.marker(coords).addTo(map);
+        map.setView(coords, 5);
+
+        socket.on("locationUpdate", update => {
+          if (update.number === query) {
+            marker.setLatLng([update.lat, update.lng]);
+            map.setView([update.lat, update.lng], 5);
+          }
+        });
+      }
+    } catch (err) {
+      loading.classList.add("hidden");
+      alert("Error fetching tracking data");
+    }
+  });
+
+  // ================= Mobile menu =================
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuOverlay = document.getElementById("menuOverlay");
+
+  let menuOpen = false;
+
+  menuBtn.addEventListener("click", () => {
+    menuOpen = !menuOpen;
+
+    if (menuOpen) {
+      mobileMenu.classList.remove("max-h-0");
+      mobileMenu.classList.add("max-h-96");
+      menuOverlay.classList.remove("hidden");
+    } else {
+      mobileMenu.classList.remove("max-h-96");
+      mobileMenu.classList.add("max-h-0");
+      menuOverlay.classList.add("hidden");
     }
 
-    searchBtn.addEventListener("click", async () => {
-      const query = input.value.trim();
-      if (!query) return alert("Please enter a tracking number");
+    // Animate hamburger → X
+    const bars = menuBtn.querySelectorAll("span");
+    if (menuOpen) {
+      bars[0].classList.add("rotate-45", "translate-y-2");
+      bars[1].classList.add("opacity-0");
+      bars[2].classList.add("-rotate-45", "-translate-y-2");
+    } else {
+      bars[0].classList.remove("rotate-45", "translate-y-2");
+      bars[1].classList.remove("opacity-0");
+      bars[2].classList.remove("-rotate-45", "-translate-y-2");
+    }
+  });
 
-      loading.classList.remove("hidden");
-      results.classList.add("hidden");
-      mapDiv.classList.add("hidden");
-
-      try {
-        const res = await fetch(`http://localhost:3000/track?number=${query}`);
-        const data = await res.json();
-
-        loading.classList.add("hidden");
-        results.classList.remove("hidden");
-
-        // Summary
-        summaryCard.innerHTML = `
-          <div class="space-y-2">
-            <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
-            <p><strong>Status:</strong> ${data.status}</p>
-            <p><strong>Cargo:</strong> ${data.cargo} (${data.quantity})</p>
-            <p><strong>From:</strong> ${data.origin} → <strong>To:</strong> ${data.destination}</p>
-            <p><strong>Remarks:</strong> ${data.remarks || "—"}</p>
-          </div>`;
-
-        // Details Table
-        detailsTable.innerHTML = `
-          <tr>
-            <td class="p-2">${data.packageDescription || "—"}</td>
-            <td class="p-2">${data.weight || "—"}</td>
-            <td class="p-2">${data.dimensions || "—"}</td>
-            <td class="p-2">${data.quantity || "—"}</td>
-            <td class="p-2">${data.estimatedDeparture || "—"}</td>
-            <td class="p-2">${data.estimatedDelivery || "—"}</td>
-          </tr>`;
-
-        // History
-        historyList.innerHTML = data.history.map(h => `
-          <li class="border-l-2 border-gray-600 pl-4">
-            <p><strong>${new Date(h.date).toLocaleString()}</strong> — ${h.status}</p>
-            <p class="text-sm text-gray-400">${h.location || ""} ${h.remarks || ""}</p>
-          </li>`).join("");
-
-        // Map
-        let coords = null;
-        if (data.latitude && data.longitude) {
-          coords = [data.latitude, data.longitude];
-        } else if (data.origin) {
-          coords = await getCoords(data.origin);
-        }
-
-        if (coords) {
-          mapDiv.classList.remove("hidden");
-          if (!map) {
-            map = L.map("map").setView(coords, 5);
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-              maxZoom: 19,
-            }).addTo(map);
-          }
-          if (marker) marker.remove();
-          marker = L.marker(coords).addTo(map);
-          map.setView(coords, 5);
-
-          socket.on("locationUpdate", update => {
-            if (update.number === query) {
-              marker.setLatLng([update.lat, update.lng]);
-              map.setView([update.lat, update.lng], 5);
-            }
-          });
-        }
-      } catch (err) {
-        loading.classList.add("hidden");
-        alert("Error fetching tracking data");
-      }
-    });
-
-// Mobile menu js
-const menuBtn = document.getElementById("menuBtn");
-const mobileMenu = document.getElementById("mobileMenu");
-const menuOverlay = document.getElementById("menuOverlay");
-
-let menuOpen = false;
-
-menuBtn.addEventListener("click", () => {
-  menuOpen = !menuOpen;
-
-  // Toggle dropdown
-  if (menuOpen) {
-    mobileMenu.classList.remove("max-h-0");
-    mobileMenu.classList.add("max-h-96");
-    menuOverlay.classList.remove("hidden");
-  } else {
+  menuOverlay.addEventListener("click", () => {
+    menuOpen = false;
     mobileMenu.classList.remove("max-h-96");
     mobileMenu.classList.add("max-h-0");
     menuOverlay.classList.add("hidden");
-  }
 
-  // Animate hamburger → X
-  const bars = menuBtn.querySelectorAll("span");
-  if (menuOpen) {
-    bars[0].classList.add("rotate-45", "translate-y-2");
-    bars[1].classList.add("opacity-0");
-    bars[2].classList.add("-rotate-45", "-translate-y-2");
-  } else {
+    const bars = menuBtn.querySelectorAll("span");
     bars[0].classList.remove("rotate-45", "translate-y-2");
     bars[1].classList.remove("opacity-0");
     bars[2].classList.remove("-rotate-45", "-translate-y-2");
-  }
-});
+  });
+</script>
 
-// ✅ Close menu if overlay is clicked
-menuOverlay.addEventListener("click", () => {
-  menuOpen = false;
-  mobileMenu.classList.remove("max-h-96");
-  mobileMenu.classList.add("max-h-0");
-  menuOverlay.classList.add("hidden");
-
-  const bars = menuBtn.querySelectorAll("span");
-  bars[0].classList.remove("rotate-45", "translate-y-2");
-  bars[1].classList.remove("opacity-0");
-  bars[2].classList.remove("-rotate-45", "-translate-y-2");
-});
-
-  </script>
 </body>
 </html>
