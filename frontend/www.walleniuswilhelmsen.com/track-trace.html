@@ -69,7 +69,7 @@
 
       <!-- Mobile Menu -->
         <div id="mobileMenu">
-        class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
+        <div id="mobileMenu" class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
         <a href="schedules.html" class="text-xl font-medium hover:text-gray-500">Schedules</a>
         <a href="track-trace.html" class="text-xl font-semibold">Track & Trace</a>
         <a href="who-we-are/investors.html" class="text-xl font-medium hover:text-gray-500">Investor</a>
@@ -91,13 +91,19 @@
       <div class="bg-gray-900 text-white rounded-lg shadow-lg p-8">
         <h2 class="text-2xl font-semibold mb-6">Visibility - Search</h2>
 
-        <div class="flex flex-col sm:flex-row gap-4 mb-6">
-          <input id="trackingInput" type="text" placeholder="Enter tracking number"
-            class="flex-1 min-w-[200px] w-full h-12 px-4 rounded border bg-white text-black"/>
-          <button id="searchBtn"
-            class="w-full sm:w-auto h-12 px-6 bg-black text-white rounded hover:bg-gray-800">🔍 Search</button>
-        </div>
-        
+      <div class="flex w-full max-w-xl mx-auto px-2">
+          <input 
+            id="trackingInput" 
+            type="text" 
+            placeholder="Enter tracking number"
+            class="flex-1 h-14 px-4 rounded-l-lg border bg-white text-black text-base w-full"/>
+          <button 
+            id="trackButton"
+            class="h-14 px-6 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors">
+            Track
+          </button>
+      </div>
+
 
         <div id="loading" class="hidden text-center mb-6">
           <div class="spinner"></div><p class="mt-2">Loading...</p>
