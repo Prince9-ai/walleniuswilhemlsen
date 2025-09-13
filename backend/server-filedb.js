@@ -25,10 +25,11 @@ app.use(cors());
 app.use(express.json());
 
 // ================== Serve Frontend ==================
-app.use(express.static(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com")));
+app.use(express.static(path.join(__dirname, "frontend/www.walleniuswilhelmsen.com")));
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/www.walleniuswilhelmsen.com/index.html"));
+  res.sendFile(path.join(__dirname, "frontend/www.walleniuswilhelmsen.com/index.html"));
 });
+
 
 // ================== File Database ==================
 const DB_FILE = path.join(__dirname, "shipments.json");

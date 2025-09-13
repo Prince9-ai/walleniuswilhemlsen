@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track & Trace - Wallenius Wilhelmsen</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    body { font-family: "Inter", sans-serif; }
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-left-color: #000;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+    main { padding-top: 88px; }
+    
+  /* timeline vertical line */
+  .timeline-line {
+    left: 1.25rem;   /* aligns line with icon center */
+    width: 2px;
+    margin-top: 1.5rem;  /* little gap under circle */
+    background-color: #d1d5db; /* Tailwind gray-300 */
+  }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- Header (unchanged) -->
+<!-- ✅ Header -->
+<header class="fixed top-0 left-0 w-full bg-white shadow z-50">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center">
+      <img src="/logo.jpg" alt="Wallenius Wilhelmsen Logo" class="h-10 md:h-12 w-auto">
+    </a>
+
+    <!-- Desktop Nav -->
+<!-- Desktop Nav -->
+<nav class="hidden md:flex space-x-10 font-medium text-lg">
+  <a href="schedules.html" class="black-700 hover:text-blue-700 transition relative group">
+    Schedules
+    <span class="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-700 transition-all group-hover:w-full"></span>
+  </a>
+  <a href="track-trace.html" class="text-blue-700 font-semibold relative">
+    Track & Trace
+    <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-700"></span>
+  </a>
+  <a href="who-we-are/investors.html" class="black-700 hover:text-blue-700 transition relative group">
+    Investor
+    <span class="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-700 transition-all group-hover:w-full"></span>
+  </a>
+  <a href="ukraine-situation.html" class="black-700 hover:text-blue-700 transition relative group">
+    Careers
+    <span class="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-700 transition-all group-hover:w-full"></span>
+  </a>
+  <a href="search.html" class="black-700 hover:text-blue-700 transition relative group">
+    Search
+    <span class="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-700 transition-all group-hover:w-full"></span>
+  </a>
+</nav>
+
+
+    <!-- Mobile Menu Button -->
+    <button id="menuBtn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5 focus:outline-none">
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+      <span class="block w-6 h-0.5 bg-black transition-all duration-300"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+  <!-- Mobile Dropdown -->
+  <div id="mobileMenu" class="absolute top-full left-0 w-full max-h-0 overflow-hidden transition-all duration-500 ease-in-out flex flex-col space-y-4 bg-white shadow-lg md:hidden z-50">
+    <a href="schedules.html" class="block px-6 py-3 text-lg font-medium hover:bg-gray-100">Schedules</a>
+    <a href="track-trace.html" class="block px-6 py-3 text-lg font-semibold text-blue-700 bg-gray-100">Track & Trace</a>
+    <a href="who-we-are/investors.html" class="block px-6 py-3 text-lg font-medium hover:bg-gray-100">Investor</a>
+    <a href="ukraine-situation.html" class="block px-6 py-3 text-lg font-medium hover:bg-gray-100">Careers</a>
+    <a href="search.html" class="block px-6 py-3 text-lg font-medium hover:bg-gray-100">Search</a>
+  </div>
+</header>
+
+
+
+  <!-- Main (unchanged layout) -->
+  <main class="min-h-screen">
+    <div class="container mx-auto px-6 py-12">
+      <h1 class="text-4xl font-bold text-center mb-10">Track & Trace</h1>
+
+      <div class="bg-gray-900 text-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-semibold mb-6">Visibility - Search</h2>
+
+        <div class="flex w-full max-w-xl mx-auto px-2">
+          <input id="trackingInput" type="text" placeholder="Enter tracking number"
+                 class="flex-1 h-14 px-4 rounded-l-lg border bg-white text-black text-base w-full"/>
+          <button id="trackButton" class="h-14 px-6 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors">Track</button>
+        </div>
+
+        <div id="loading" class="hidden text-center mb-6">
+          <div class="spinner"></div><p class="mt-2">Loading...</p>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="results" class="hidden mt-6 space-y-6">
+          <!-- summary -->
+          <div id="summaryCard" class="bg-gray-800 p-6 rounded-lg"></div>
+
+          <!-- details -->
+          <div>
+            <h3 class="text-xl font-semibold mb-3">Shipment Details</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border border-gray-700">
+                <thead class="bg-gray-700">
+                  <tr>
+                    <th class="p-2">Description</th>
+                    <th class="p-2">Weight</th>
+                    <th class="p-2">Dimensions</th>
+                    <th class="p-2">Quantity</th>
+                    <th class="p-2">Est. Departure</th>
+                    <th class="p-2">Est. Delivery</th>
+                  </tr>
+                </thead>
+                <tbody id="detailsTable" class="divide-y divide-gray-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- timeline -->
+          <div>
+            <h3 class="text-xl font-semibold mb-3">Tracking Timeline</h3>
+            <ul id="historyList" class="relative space-y-6"></ul>
+          </div>
+
+          <!-- map toggle -->
+          <div class="text-center mt-4">
+            <button id="toggleMapBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">View Map</button>
+          </div>
+          <div id="mapContainer" class="hidden mt-4">
+            <div id="map" class="h-96 rounded-lg overflow-hidden"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer unchanged -->
+  <footer class="bg-gray-900 text-gray-200 py-12 mt-12">
+    <div class="container mx-auto grid md:grid-cols-4 gap-8 px-6">
+      <div>
+        <h4 class="font-bold mb-3">Resources</h4>
+        <ul class="space-y-2">
+          <li><a href="schedules.html" class="hover:underline">Schedules</a></li>
+          <li><a href="track-trace.html" class="hover:underline">Track & Trace</a></li>
+          <li><a href="rate-request.html" class="hover:underline">Rate Request</a></li>
+          <li><a href="contact-us.html" class="hover:underline">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Company</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:underline">About</a></li>
+          <li><a href="#" class="hover:underline">Careers</a></li>
+          <li><a href="#" class="hover:underline">Investor</a></li>
+          <li><a href="#" class="hover:underline">News & Insights</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Follow Us</h4>
+        <div class="flex space-x-4">
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/twitter.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg" class="w-6 h-6"/></a>
+          <a href="#"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" class="w-6 h-6"/></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold mb-3">Legal</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:underline">Privacy Notice</a></li>
+          <li><a href="#" class="hover:underline">Cookie Policy</a></li>
+          <li><a href="#" class="hover:underline">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center mt-8 text-sm text-gray-400">© 2025 Wallenius Wilhelmsen. All rights reserved.</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const searchBtn = document.getElementById("trackButton");
+    const input = document.getElementById("trackingInput");
+    const loading = document.getElementById("loading");
+    const results = document.getElementById("results");
+    const summaryCard = document.getElementById("summaryCard");
+    const detailsTable = document.getElementById("detailsTable");
+    const historyList = document.getElementById("historyList");
+    const mapDiv = document.getElementById("map");
+    const mapContainer = document.getElementById("mapContainer");
+    const toggleMapBtn = document.getElementById("toggleMapBtn");
+
+    let map, marker, currentTracking = null, currentHistory = [];
+    const socket = io();
+
+    // human readable default descriptions per status
+    const STATUS_META = {
+      "Booked": {
+        desc: "Package has been booked and is being prepared for pickup",
+        iconType: "check",     // green check
+      },
+      "Picked Up": {
+        desc: "Package has been collected from sender",
+        iconType: "check",
+      },
+      "In Transit": {
+        desc: "Package is on the way to destination",
+        iconType: "check",
+      },
+      "Out for Delivery": {
+        desc: "Package is out for delivery",
+        iconType: "clock",     // blue clock
+      },
+      "Delivered": {
+        desc: "Package has been delivered successfully",
+        iconType: "box",       // gray box
+      }
+    };
+
+    function iconSvg(type) {
+      // simple svg icons that inherit color via `currentColor`
+      if (type === "check") {
+        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      } else if (type === "truck") {
+        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 7h11v8H3z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 12h4l3-3v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="7.5" cy="18.5" r="1.5" fill="currentColor"/>
+          <circle cx="18.5" cy="18.5" r="1.5" fill="currentColor"/>
+        </svg>`;
+      } else if (type === "clock") {
+        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      } else if (type === "box") {
+        return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 16V8l-9-5-9 5v8l9 5 9-5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 3v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      }
+      // fallback
+      return `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/></svg>`;
+    }
+
+    function getStatusStyle(status, isLatest) {
+      // returns { bg, line, text } classes and icon type
+      const meta = STATUS_META[status] || { desc: '', iconType: 'box' };
+      let bg = "bg-gray-700", line = "bg-gray-500", text = "text-gray-100", iconType = meta.iconType || 'box';
+      if (status === "Booked" || status === "Picked Up" || status === "In Transit") {
+        bg = "bg-green-500"; line = "bg-green-400"; text = "text-white"; iconType = "check";
+      } else if (status === "Out for Delivery") {
+        bg = isLatest ? "bg-blue-600" : "bg-blue-500"; line = "bg-blue-400"; text = "text-white"; iconType = "clock";
+      } else if (status === "Delivered") {
+        bg = "bg-gray-300"; line = "bg-gray-400"; text = "text-gray-800"; iconType = "box";
+      }
+      // latest should be visually emphasized (slightly larger or colored)
+      return { bg, line, text, iconType, desc: meta.desc || "" };
+    }
+
+    function renderHistory(history) {
+  if (!Array.isArray(history)) history = [];
+  historyList.innerHTML = history.map((h, idx) => {
+    const isLatest = (idx === history.length - 1);
+    const statusText = h.status || "Update";
+    const dateStr = h.date ? new Date(h.date).toLocaleString() : "";
+    const meta = getStatusStyle(statusText, isLatest);
+    const desc = (h.remarks && h.remarks.trim()) ? h.remarks : (meta.desc || "");
+    const locationText = h.location ? `<p class="text-sm text-gray-300 mt-1">📍 ${h.location}</p>` : "";
+    const svg = iconSvg(meta.iconType);
+
+    return `
+      <li class="relative pl-12">
+        <!-- vertical line (runs down center of circle) -->
+        <span class="absolute top-6 bottom-0 ${meta.line} timeline-line"></span>
+
+        <!-- circle -->
+        <div class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center ${meta.bg} ${meta.text}">
+          ${svg}
+        </div>
+
+        <!-- content -->
+        <div class="ml-2">
+          <p class="font-semibold ${isLatest ? 'text-white' : 'text-gray-200'}">${statusText}</p>
+          <p class="text-xs ${isLatest ? 'text-gray-300' : 'text-gray-400'}">${dateStr}</p>
+          <p class="text-sm mt-2 ${isLatest ? 'text-gray-100' : 'text-gray-300'}">${desc}</p>
+          ${locationText}
+        </div>
+      </li>
+    `;
+  }).join("");
+}
+
+
+    async function getCoords(place) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        }
+      } catch (err) {
+        console.error("Geocoding failed:", err);
+      }
+      return null;
+    }
+
+    // track button handler
+    searchBtn.addEventListener("click", async () => {
+      const query = input.value.trim();
+      if (!query) return alert("Please enter a tracking number");
+
+      loading.classList.remove("hidden");
+      results.classList.add("hidden");
+      mapContainer.classList.add("hidden");
+
+      try {
+        const res = await fetch(`/track?number=${query}`);
+        if (!res.ok) throw new Error("Not found");
+        const data = await res.json();
+
+        loading.classList.add("hidden");
+        results.classList.remove("hidden");
+
+        currentTracking = query;
+        currentHistory = Array.isArray(data.history) ? data.history.slice() : [];
+        socket.emit("track", query);
+
+        // summary
+        const statusBadge = `<span class="px-3 py-1 rounded-full ${getStatusStyle(data.status, true).bg}">${data.status}</span>`;
+        summaryCard.innerHTML = `
+          <div class="space-y-2">
+            <p><strong>Tracking Number:</strong> ${data.tracking_number}</p>
+            <p id="statusLine"><strong>Status:</strong> ${statusBadge}</p>
+            <p><strong>Cargo:</strong> ${data.cargo || "—"} (${data.quantity || 0})</p>
+            <p><strong>From:</strong> ${data.origin || "—"} → <strong>To:</strong> ${data.destination || "—"}</p>
+          </div>`;
+
+        // details table
+      detailsTable.innerHTML = `
+        <tr>
+          <td class="p-2">${data.packageDescription || "—"}</td>
+          <td class="p-2">${data.weight !== undefined ? data.weight + " kg" : "—"}</td>
+          <td class="p-2">${data.dimensions || "—"}</td>
+          <td class="p-2">${data.quantity !== undefined ? data.quantity : "—"}</td>
+          <td class="p-2">${data.estimatedDeparture || "—"}</td>
+          <td class="p-2">${data.estimatedDelivery || "—"}</td>
+        </tr>`;
+
+
+        renderHistory(currentHistory);
+
+        // map
+        let coords = null;
+        if (typeof data.latitude === "number" && typeof data.longitude === "number") {
+          coords = [data.latitude, data.longitude];
+        } else if (data.origin) {
+          coords = await getCoords(data.origin);
+        }
+
+        if (coords) {
+          if (!map) {
+            map = L.map("map").setView(coords, 5);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+          }
+          if (marker) marker.remove();
+          marker = L.marker(coords).addTo(map);
+          map.setView(coords, 5);
+        }
+      } catch (err) {
+        loading.classList.add("hidden");
+        console.error(err);
+        alert("Error fetching tracking data");
+      }
+    });
+
+    // live updates from server
+    socket.on("shipment:update", update => {
+      if (update.tracking_number !== currentTracking) return;
+
+      // update summary status line
+      const statusLineEl = document.getElementById("statusLine");
+      if (statusLineEl) {
+        const statusBadge = `<span class="px-3 py-1 rounded-full ${getStatusStyle(update.status, true).bg}">${update.status}</span>`;
+        statusLineEl.innerHTML = `<strong>Status:</strong> ${statusBadge}`;
+      }
+
+      // Build a consistent history item (same shape as server-filedb uses)
+      const newEntry = {
+        status: update.status,
+        location: update.location || "",
+        remarks: update.remarks || "",
+        date: new Date().toISOString(),
+        latitude: update.latitude,
+        longitude: update.longitude
+      };
+
+      // Avoid duplicate consecutive status entries
+      const last = currentHistory[currentHistory.length - 1];
+      const isDuplicate = last
+        && last.status === newEntry.status
+        && ( (last.location || "") === (newEntry.location || "") )
+        && ( (last.remarks || "") === (newEntry.remarks || "") );
+
+      if (!isDuplicate) {
+        currentHistory.push(newEntry); // keep chronological oldest->newest
+        renderHistory(currentHistory);
+      }
+
+      // map update
+      if (update.latitude && update.longitude) {
+        if (!map) {
+          // create map if not present and open map container so user can view
+          mapContainer.classList.remove("hidden");
+          map = L.map("map").setView([update.latitude, update.longitude], 5);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+          marker = L.marker([update.latitude, update.longitude]).addTo(map);
+        } else {
+          if (!marker) {
+            marker = L.marker([update.latitude, update.longitude]).addTo(map);
+          } else {
+            marker.setLatLng([update.latitude, update.longitude]);
+          }
+          map.setView([update.latitude, update.longitude], 5);
+        }
+      }
+    });
+
+    // map toggle
+    toggleMapBtn.addEventListener("click", () => {
+      mapContainer.classList.toggle("hidden");
+      toggleMapBtn.textContent = mapContainer.classList.contains("hidden") ? "View Map" : "Hide Map";
+      if (!mapContainer.classList.contains("hidden") && map) {
+        setTimeout(() => map.invalidateSize(), 200);
+      }
+    });
+
+    // Mobile menu (unchanged)
+    const menuBtn = document.getElementById("menuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuOverlay = document.getElementById("menuOverlay");
+    let menuOpen = false;
+
+    menuBtn.addEventListener("click", () => {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        mobileMenu.classList.remove("max-h-0");
+        mobileMenu.classList.add("max-h-96");
+        menuOverlay.classList.remove("hidden");
+      } else {
+        mobileMenu.classList.remove("max-h-96");
+        mobileMenu.classList.add("max-h-0");
+        menuOverlay.classList.add("hidden");
+      }
+      const bars = menuBtn.querySelectorAll("span");
+      if (menuOpen) {
+        bars[0].classList.add("rotate-45", "translate-y-2");
+        bars[1].classList.add("opacity-0");
+        bars[2].classList.add("-rotate-45", "-translate-y-2");
+      } else {
+        bars[0].classList.remove("rotate-45", "translate-y-2");
+        bars[1].classList.remove("opacity-0");
+        bars[2].classList.remove("-rotate-45", "-translate-y-2");
+      }
+    });
+
+    menuOverlay.addEventListener("click", () => {
+      menuOpen = false;
+      mobileMenu.classList.remove("max-h-96");
+      mobileMenu.classList.add("max-h-0");
+      menuOverlay.classList.add("hidden");
+      const bars = menuBtn.querySelectorAll("span");
+      bars[0].classList.remove("rotate-45", "translate-y-2");
+      bars[1].classList.remove("opacity-0");
+      bars[2].classList.remove("-rotate-45", "-translate-y-2");
+    });
+  </script>
+</body>
+</html>

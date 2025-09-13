@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="187.289" height="149.674" viewBox="0 0 187.289 149.674">
+  <g transform="translate(-22.206 -28.93)">
+    <path d="M95.61,49.18c8.438-8.481,17.548-13.991,28.329-15.01" transform="translate(84.739 5.249)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+    <path d="M77.15,76.323A69.452,69.452,0,0,0,93.57,58.275c1.041-1.627,2.061-3.232,3.08-4.815" transform="translate(63.157 27.802)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+    <path d="M47.99,77.966c1.432-.347,2.907-.672,4.425-.954C61,75.406,69.4,73.649,77.425,71.35" transform="translate(29.065 48.718)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+    <path d="M23.13,114.991A80.5,80.5,0,0,1,42.7,83.3" transform="translate(0 62.689)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+    <circle cx="10.368" cy="10.368" r="10.368" transform="translate(47.945 123.495)" fill="none" stroke="#00bc98" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle>
+    <circle cx="10.368" cy="10.368" r="10.368" transform="translate(113.778 103.344)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle>
+    <circle cx="10.368" cy="10.368" r="10.368" transform="translate(158.896 56.989)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle>
+    <g transform="translate(28.011 29.68)">
+      <path d="M85.986,60.113c0,20.542-30.3,50.845-30.3,50.845s-30.3-30.3-30.3-50.845c0-19.262,15.661-30.433,30.3-30.433S85.986,40.851,85.986,60.113Z" transform="translate(-25.38 -29.68)" fill="none" stroke="#343741" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+      <circle cx="15.726" cy="15.726" r="15.726" transform="translate(14.577 14.577)" fill="none" stroke="#00bc98" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle>
+    </g>
+  </g>
+</svg>
