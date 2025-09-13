@@ -113,12 +113,12 @@ app.post("/admin/book", (req, res) => {
   res.json({ ok: true, shipment });
 });
 
-// NEW: List shipments for admin (matches server.js shape)
+// List shipments
 app.get("/admin/list", (req, res) => {
   res.json(shipments.slice(0, 500));
 });
 
-// NEW: Update shipment (admin)
+// Update shipment (with duplicate history fix)
 app.put("/admin/update/:trackingNumber", (req, res) => {
   const tn = req.params.trackingNumber;
   const s = shipments.find((x) => x.trackingNumber === tn);
@@ -140,14 +140,23 @@ app.put("/admin/update/:trackingNumber", (req, res) => {
 
   s.updatedAt = new Date();
   s.history = s.history || [];
-  s.history.push({
-    status: s.status,
-    location: s.location,
-    remarks: s.remarks,
-    date: new Date(),
-    latitude: s.latitude,
-    longitude: s.longitude
-  });
+
+  // ✅ Only add history if something meaningful changed
+  const lastEntry = s.history[s.history.length - 1];
+  const statusChanged = status && (!lastEntry || lastEntry.status !== status);
+  const locationChanged = location && (!lastEntry || lastEntry.location !== location);
+  const remarksChanged = remarks && (!lastEntry || lastEntry.remarks !== remarks);
+
+  if (statusChanged || locationChanged || remarksChanged) {
+    s.history.push({
+      status: s.status,
+      location: s.location,
+      remarks: s.remarks,
+      date: new Date(),
+      latitude: s.latitude,
+      longitude: s.longitude
+    });
+  }
 
   saveShipments();
 
@@ -165,7 +174,7 @@ app.put("/admin/update/:trackingNumber", (req, res) => {
   res.json({ ok: true, shipment: s });
 });
 
-// NEW: Delete shipment (admin)
+// Delete shipment
 app.delete("/admin/delete/:trackingNumber", (req, res) => {
   const tn = req.params.trackingNumber;
   const before = shipments.length;
