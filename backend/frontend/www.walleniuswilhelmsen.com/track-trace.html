@@ -24,7 +24,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+    header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1050; }
     main { padding-top: 88px; }
     
   /* timeline vertical line */
@@ -34,6 +34,11 @@
     margin-top: 1.5rem;  /* little gap under circle */
     background-color: #d1d5db; /* Tailwind gray-300 */
   }
+  #map {
+  position: relative;   /* ensure it respects stacking context */
+  z-index: 0;           /* keeps map under navbar */
+  margin-top: 1rem;     /* adds spacing under navbar */
+}
   </style>
 </head>
 <body class="bg-white text-black">
